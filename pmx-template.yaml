@@ -1,0 +1,234 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: 'API Gateway, Lambda, and s3.'
+Resources:
+  BaseLambdaExecutionPolicy:
+    Type: 'AWS::IAM::ManagedPolicy'
+    Properties:
+      Description: Base permissions needed by all lambda functions.
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - 'logs:CreateLogGroup'
+              - 'logs:CreateLogStream'
+              - 'logs:PutLogEvents'
+              - 'ec2:CreateNetworkInterface'
+              - 'ec2:DescribeNetworkInterfaces'
+              - 'ec2:DeleteNetworkInterface'
+            Resource: '*'
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 6b40ed61-e75d-4b81-88c2-b0690cb20022
+  PMXApiGateway:
+    Type: 'AWS::ApiGateway::RestApi'
+    Properties:
+      Name: !Sub '${AWS::StackName}-PMXApiGateway'
+      Description: A description
+      FailOnWarnings: true
+      Body:
+        swagger: 2
+        info:
+          description: |
+            The account API.
+          version: 1
+        basePath: /
+        schemes:
+          - https
+        consumes:
+          - application/json
+        produces:
+          - application/json
+        paths:
+          '/images/{imageId}/uploadImage':
+            get:
+              description: TBD
+              x-amazon-apigateway-integration:
+                uri: !Sub >-
+                  arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${PMXLambda.Arn}/invocations
+                credentials: !GetAtt PMXApiGatewayRole.Arn
+                passthroughBehavior: when_no_match
+                httpMethod: POST
+                type: aws_proxy
+              operationId: getImage
+              parameters:
+                - name: imageId
+                  in: path
+                  description: TBD
+                  required: true
+                  type: string
+                  format: uuid
+            post:
+              description: TBD
+              x-amazon-apigateway-integration:
+                uri: !Sub >-
+                  arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${PMXLambda.Arn}/invocations
+                credentials: !GetAtt PMXApiGatewayRole.Arn
+                passthroughBehavior: when_no_match
+                httpMethod: POST
+                type: aws_proxy
+              operationId: postImage
+              parameters:
+                - name: imageId
+                  in: path
+                  description: TBD
+                  required: true
+                  type: string
+                  format: uuid
+                - name: body
+                  in: body
+                  description: TBD
+                  required: true
+                  schema:
+                    type: object
+                    required:
+                      - email
+                    properties:
+                      email:
+                        type: string
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 9ca0ef6f-de89-4aef-8277-8aff2ba2456e
+  PMXApiGatewayDeployment:
+    Type: 'AWS::ApiGateway::Deployment'
+    Properties:
+      RestApiId: !Ref PMXApiGateway
+      StageName: prod
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: c79b4fb6-4bb7-49ad-8f67-774c0605ad0b
+  PMXApiGatewayRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: apigateway.amazonaws.com
+            Action: 'sts:AssumeRole'
+      Policies:
+        - PolicyName: InvokeLambda
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'lambda:InvokeFunction'
+                Resource:
+                  - !GetAtt PMXLambda.Arn
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 55e03213-654f-4264-a7ba-4f01bdeac3d1
+  PMXLambda:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      Role: !GetAtt PMXLambdaRole.Arn
+      Handler: index.handleHttpRequest
+      Runtime: python3.x
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: f98fc67c-751b-45d5-911a-5499e3cff5e0
+  PMXLambdaRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: 'sts:AssumeRole'
+      ManagedPolicyArns:
+        - !Ref BaseLambdaExecutionPolicy
+      Policies:
+        - PolicyName: getImage
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'dynamodb:GetItem'
+                Resource: !Sub 'arn:aws:dynamodb:${AWS::Region}:*:table/${PMXTable}'
+        - PolicyName: putImage
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'dynamodb:PutItem'
+                Resource: !Sub 'arn:aws:dynamodb:${AWS::Region}:*:table/${PMXTable}'
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 41e3970d-a878-4a41-9125-93edcd8bab55
+Metadata:
+  'AWS::CloudFormation::Designer':
+    43161f85-9acd-46c2-9016-afdde608eda7:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 360
+        'y': 90
+      z: 1
+      embeds: []
+    6b40ed61-e75d-4b81-88c2-b0690cb20022:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 360
+        'y': 210
+      z: 1
+      embeds: []
+    41e3970d-a878-4a41-9125-93edcd8bab55:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 360
+        'y': 330
+      z: 1
+      embeds: []
+      isassociatedwith:
+        - 6b40ed61-e75d-4b81-88c2-b0690cb20022
+    f98fc67c-751b-45d5-911a-5499e3cff5e0:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 60
+        'y': 390
+      z: 1
+      embeds: []
+    55e03213-654f-4264-a7ba-4f01bdeac3d1:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 180
+        'y': 390
+      z: 1
+      embeds: []
+    9ca0ef6f-de89-4aef-8277-8aff2ba2456e:
+      size:
+        width: 240
+        height: 240
+      position:
+        x: 60
+        'y': 90
+      z: 1
+      embeds:
+        - c79b4fb6-4bb7-49ad-8f67-774c0605ad0b
+    c79b4fb6-4bb7-49ad-8f67-774c0605ad0b:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 90
+        'y': 150
+      z: 2
+      parent: 9ca0ef6f-de89-4aef-8277-8aff2ba2456e
+      embeds: []
+      iscontainedinside:
+        - 9ca0ef6f-de89-4aef-8277-8aff2ba2456e
