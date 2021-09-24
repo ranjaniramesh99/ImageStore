@@ -1,0 +1,145 @@
+{
+	"info": {
+		"_postman_id": "6d05f370-75d7-427b-bfed-ace652fad730",
+		"name": "PMX Image Gateway",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "https://qs3gqymjg7.execute-api.us-east-1.amazonaws.com/prod/images/uploadimage?subjectID=dcm2&imageID=MRBRAIN.DCM",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "FileName",
+							"type": "file",
+							"src": "/C:/2021/Personal/PMX/MRBRAIN.DCM"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://qs3gqymjg7.execute-api.us-east-1.amazonaws.com/prod/images/uploadimage?subjectID=dcm2&imageID=MRBRAIN.DCM",
+					"protocol": "https",
+					"host": [
+						"qs3gqymjg7",
+						"execute-api",
+						"us-east-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"prod",
+						"images",
+						"uploadimage"
+					],
+					"query": [
+						{
+							"key": "subjectID",
+							"value": "dcm2"
+						},
+						{
+							"key": "imageID",
+							"value": "MRBRAIN.DCM"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "https://qs3gqymjg7.execute-api.us-east-1.amazonaws.com/prod/images/downloadimage?subjectID=dcm2&imageID=MRBRAIN.DCM",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "FileName",
+							"type": "file",
+							"src": [],
+							"disabled": true
+						}
+					]
+				},
+				"url": {
+					"raw": "https://qs3gqymjg7.execute-api.us-east-1.amazonaws.com/prod/images/downloadimage?subjectID=dcm2&imageID=MRBRAIN.DCM",
+					"protocol": "https",
+					"host": [
+						"qs3gqymjg7",
+						"execute-api",
+						"us-east-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"prod",
+						"images",
+						"downloadimage"
+					],
+					"query": [
+						{
+							"key": "subjectID",
+							"value": "dcm2"
+						},
+						{
+							"key": "imageID",
+							"value": "MRBRAIN.DCM"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "https://qs3gqymjg7.execute-api.us-east-1.amazonaws.com/prod/images/list?subjectID=DCM2",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "FileName",
+							"type": "file",
+							"src": [],
+							"disabled": true
+						}
+					]
+				},
+				"url": {
+					"raw": "https://qs3gqymjg7.execute-api.us-east-1.amazonaws.com/prod/images/list?subjectID=DCM2",
+					"protocol": "https",
+					"host": [
+						"qs3gqymjg7",
+						"execute-api",
+						"us-east-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"prod",
+						"images",
+						"list"
+					],
+					"query": [
+						{
+							"key": "subjectID",
+							"value": "DCM2"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
